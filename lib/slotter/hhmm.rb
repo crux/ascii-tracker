@@ -4,15 +4,22 @@ module Slotter
 
     include Comparable
     def <=>(other)
-      self.to_f <=> other.to_f
+      a = (hours <=> other.hours)
+      a == 0 ? (minutes <=> other.minutes) : a
     end
 
-    def -(other); self.to_f - other.to_f end
-    def +(other); self.to_f + other.to_f end
+    #def -(other); self.to_f - other.to_f end
+    #def +(other); self.to_f + other.to_f end
+    def -(other)
+      m = to_minutes - other.to_minutes
+      (m += 24 * 60) if m < 0
+      HHMM.new *(m.divmod 60)
+    end
 
     def to_a; [hours, minutes] end
     def to_s; "%02d:%02d" % [hours, minutes] end
     def to_f; (minutes.to_f/60) + hours end
+    def to_minutes; (60*hours) + minutes end
 
     # "12:30", "1:15" or "00:45" for hours and minutes
     #   or
