@@ -1,2 +1,5 @@
 require 'date'
 require 'slotter/hhmm'
+require 'slotter/record'
+require 'slotter/model'
+require 'slotter/controller'
