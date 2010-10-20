@@ -26,7 +26,7 @@ module Slotter
     def find_best_cover rec, date = Date.today
       by_date(date).inject(nil) do |best, test| 
         if test.respond_to?(:covers?) # spans never cover
-          if test.covers?(rec) && (best.nil? || test.span < best.span)
+          if test.covers?(rec) && (best.nil? || (best.covers? test))
             best = test 
           end
         end
