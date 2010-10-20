@@ -5,6 +5,29 @@ describe "Slotter::Record" do
   it "finds the class" do
     Slot.should_not == nil
   end
+
+  describe "with 10:45 - 12:15" do
+    before :each do 
+      @rec = Slot.new :start=>"10:45", :end=>"12:15", :desc=>"foo bar"
+    end
+
+    it "should fit Records" do
+      # span are always contained...
+      @rec.covers?(Record.new(:span => 0.5)).should == true
+      @rec.covers?(Record.new(:span => 1.5)).should == true
+    end
+
+    it "should not cover records with are to long" do
+      @rec.covers?(Record.new(:span => "1:31")).should == false
+      @rec.covers?(Record.new(:span => 5.0)).should == false
+    end
+
+    it "should calc slot covers" do
+      @rec.covers?(Slot.new(:start=>"10:45", :end=>"12:15")).should == true
+      @rec.covers?(Slot.new(:start=>"10:00", :end=>"12:15")).should == false
+      @rec.covers?(Slot.new(:start=>"10:45", :end=>"13:00")).should == false
+    end
+  end
   
   it "should construct from start, end and desc options" do
     rec = Slot.new :start => "10:15", :end => "10:45", :desc => "foo bar"
@@ -75,6 +98,37 @@ describe "Slotter::Record" do
     end
   end
 
+  describe "with base over around midnight" do
+    before :each do 
+      @base = Slot.new :start => "22:00", :end => "02:00"
+    end
+
+    it "should calc overlaps around midnight" do
+      # before
+      a = Slot.new :start => "20:00", :end => "21:59"
+      @base.covers?(a).should == false
+      @base.overlaps?(a).should == false
+      # after
+      a = Slot.new :start => "02:01", :end => "04:00"
+      @base.covers?(a).should == false
+      @base.overlaps?(a).should == false
+
+      a = Slot.new :start => "23:00", :end => "23:10"
+      puts " -- #{[@base.t_start, @base.t_end, a.t_start, a.t_end].join(', ')}"
+      @base.covers?(a).should == true
+      @base.overlaps?(a).should == true
+
+      a = Slot.new :start => "23:00", :end => "01:00"
+      puts " -- #{[@base.t_start, @base.t_end, a.t_start, a.t_end].join(', ')}"
+      @base.covers?(a).should == true
+      @base.overlaps?(a).should == true
+
+      a = Slot.new :start => "01:00", :end => "01:10"
+      puts " -- #{[@base.t_start, @base.t_end, a.t_start, a.t_end].join(', ')}"
+      @base.overlaps?(a).should == true
+      @base.covers?(a).should == true
+    end
+  end
 end
 __END__
 
@@ -148,22 +202,6 @@ class SlotTest < Test::Unit::TestCase
 
         slot = Slot.new :start=>"12:15", :end => "12:30", :desc => "intruppt"
         assert_raise(SlotterException) { rec.add_interrupt(slot) }
-    end
-
-    def test_does_fit_slot_or_span
-        puts "\n--> #{self}"
-        rec = Slot.new :start=>"10:45", :end=>"12:15", :desc=>"foo bar"
-
-        # span are always contained...
-        assert rec.covers?(Record.new(:span => 0.5))
-        assert rec.covers?(Record.new(:span => 1.5))
-        # as long as they fit
-        assert ! rec.covers?(Record.new(:span => "1:31"))
-        assert ! rec.covers?(Record.new(:span => 5.0)) # span to long!
-
-        assert rec.covers?(Slot.new(:start=>"10:45", :end=>"12:15"))
-        assert ! rec.covers?(Slot.new(:start=>"10:00", :end=>"12:15"))
-        assert ! rec.covers?(Slot.new(:start=>"10:45", :end=>"13:00"))
     end
 end
 
