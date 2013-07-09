@@ -1,4 +1,4 @@
-module Slotter
+module Timecard
 
   class HHMM < Struct.new :hours, :minutes
 

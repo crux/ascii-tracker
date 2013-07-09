@@ -1,4 +1,4 @@
-module Slotter
+module Timecard
   class Slot < Record
 
     attr_reader :t_start, :t_end
@@ -80,21 +80,21 @@ module Slotter
     def add_interrupt slot_or_span
       slr = slot_or_span # shortcut
       unless covers? slr
-        raise SlotterException, "interrupt not covered! #{slr}"
+        raise TimecardException, "interrupt not covered! #{slr}"
       end
 
       unless slr.span <= span
-        raise SlotterException, "'#{self}' overload(#{span}): #{slr}"
+        raise TimecardException, "'#{self}' overload(#{span}): #{slr}"
       end
-      #raise SlotterException, "overload: #{slr}" unless slr.span <= span
+      #raise TimecardException, "overload: #{slr}" unless slr.span <= span
 
       # new interrupts may not overlap with existing ones!
       if slr.respond_to?(:t_start) 
-        #raise SlotterException, "overlap: #{slr}" if @interrupts.any? do |i| 
+        #raise TimecardException, "overlap: #{slr}" if @interrupts.any? do |i| 
         #    slr.overlaps? i
         #end
         if @interrupts.any? { |rec| slr.overlaps? rec }
-          raise SlotterException, "overlap: #{slr}"
+          raise TimecardException, "overlap: #{slr}"
         end
       end
 

@@ -1,4 +1,4 @@
-module Slotter
+module Timecard
   class Record
 
     attr_reader :date, :span, :desc

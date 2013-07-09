@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-include Slotter 
-describe "Slotter::HHMM" do
+include Timecard 
+describe "Timecard::HHMM" do
   it "finds the class" do
     HHMM.should_not == nil
   end

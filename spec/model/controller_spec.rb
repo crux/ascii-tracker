@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-include Slotter 
-describe "Slotter::Controller" do
+include Timecard 
+describe "Timecard::Controller" do
   it "finds the class" do
     Controller.should_not == nil
   end
@@ -24,7 +24,7 @@ __END__
 
 class ControllerTest < Test::Unit::TestCase
 
-    include Slotter
+    include Timecard
    
     def test_expoeasy
       puts "\n--> #{self}"
@@ -89,16 +89,16 @@ class ControllerTest < Test::Unit::TestCase
         assert_equal 5, c.model.records.length
         assert_equal 2.5, c.model.records.first.span
 
-        assert_raise(SlotterException) do 
+        assert_raise(TimecardException) do 
             c.new_slot  HHMM("09:15"), HHMM("10:15"), "overlap"
         end
-        assert_raise(SlotterException) do 
+        assert_raise(TimecardException) do 
             c.new_slot  HHMM("10:00"), HHMM("11:00"), "overlap"
         end
-        assert_raise(SlotterException) do 
+        assert_raise(TimecardException) do 
             c.new_slot  HHMM("11:00"), HHMM("12:00"), "overlap"
         end
-        assert_raise(SlotterException) do 
+        assert_raise(TimecardException) do 
             c.new_slot  HHMM("13:55"), HHMM("14:05"), "overlap"
         end
 

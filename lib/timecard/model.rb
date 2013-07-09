@@ -1,4 +1,4 @@
-module Slotter
+module Timecard
   class Model
 
     attr_reader :records, :projects 

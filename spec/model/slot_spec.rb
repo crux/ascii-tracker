@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-include Slotter 
-describe "Slotter::Record" do
+include Timecard 
+describe "Timecard::Record" do
   it "finds the class" do
     Slot.should_not == nil
   end
@@ -134,7 +134,7 @@ __END__
 
 class SlotTest < Test::Unit::TestCase
 
-  include Slotter
+  include Timecard
 
 
   def test_overlaps_around_midnight
@@ -181,7 +181,7 @@ class SlotTest < Test::Unit::TestCase
         assert_equal 2, rec.interrupts.length
         assert_equal 0.5, rec.span 
 
-        assert_raise(SlotterException) { rec.add_interrupt(wasted_time) }
+        assert_raise(TimecardException) { rec.add_interrupt(wasted_time) }
 
         rec = Slot.new :start=>"10:00", :end=>"12:30", :desc=>"foo bar"
         slot = Slot.new :start=>"10:00", :end => "12:00", :desc => "intruppt"
@@ -189,9 +189,9 @@ class SlotTest < Test::Unit::TestCase
         assert_equal 0.5, rec.span 
 
         slot = Slot.new :start=>"12:30", :end => "13:00", :desc => "intruppt"
-        assert_raise(SlotterException) { rec.add_interrupt(slot) }
+        assert_raise(TimecardException) { rec.add_interrupt(slot) }
         slot = Slot.new :start=>"09:30", :end => "11:00", :desc => "intruppt"
-        assert_raise(SlotterException) { rec.add_interrupt(slot) }
+        assert_raise(TimecardException) { rec.add_interrupt(slot) }
 
         slot = Slot.new :start=>"12:00", :end => "12:15", :desc => "intruppt"
         rec.add_interrupt(slot)
@@ -201,7 +201,7 @@ class SlotTest < Test::Unit::TestCase
         assert_equal 0.0, rec.span 
 
         slot = Slot.new :start=>"12:15", :end => "12:30", :desc => "intruppt"
-        assert_raise(SlotterException) { rec.add_interrupt(slot) }
+        assert_raise(TimecardException) { rec.add_interrupt(slot) }
     end
 end
 

@@ -1,4 +1,4 @@
-module Slotter 
+module Timecard 
   class Controller
     attr_reader :model
 
@@ -28,7 +28,7 @@ module Slotter
         if parent = @model.find_best_cover(@slot, @day)
           parent.add_interrupt(@slot)
         else
-          raise SlotterException, <<-EOM
+          raise TimecardException, <<-EOM
           #{@slot}
 overlaps with:
           #{overlaps.first} ...
