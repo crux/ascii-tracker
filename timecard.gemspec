@@ -8,8 +8,12 @@ Gem::Specification.new do |spec|
   spec.version       = Timecard::VERSION
   spec.authors       = ["dirk lu\xCC\x88sebrink"]
   spec.email         = ["dirk.luesebrink@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{
+    keeping track of time in a textfile. now web app, no mouse clicking. No GUI
+    is as easy as "12:13-17:34", and no time tracker i know of allows you to
+    add interrupts like: '0:13 pause: phone call with mum'
+  }
+  spec.summary       = %q{time tracking the ascii way}
   spec.homepage      = ""
   spec.license       = "MIT"
 

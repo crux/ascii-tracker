@@ -1,9 +1,12 @@
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'slotter'
-require 'spec'
-require 'spec/autorun'
+$:.unshift(File.dirname(__FILE__))
+$:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-Spec::Runner.configure do |config|
-  
+require 'timecard'
+
+RSpec.configure do |config|
+  config.before :each do
+  end
+
+  config.after :each do
+  end
 end
