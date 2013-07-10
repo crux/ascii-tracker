@@ -1,4 +1,4 @@
-module Timecard
+module AsciiTracker
   class Model
 
     attr_reader :records, :projects 

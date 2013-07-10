@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'timecard/version'
+require 'asciitracker/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "timecard"
-  spec.version       = Timecard::VERSION
+  spec.name          = "asciitracker"
+  spec.version       = AsciiTracker::VERSION
   spec.authors       = ["dirk lu\xCC\x88sebrink"]
   spec.email         = ["dirk.luesebrink@gmail.com"]
   spec.description   = %q{

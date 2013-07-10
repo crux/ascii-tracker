@@ -1,4 +1,4 @@
-module Timecard
+module AsciiTracker
   class Record
 
     attr_reader :date, :span, :desc

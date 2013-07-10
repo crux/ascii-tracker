@@ -1,4 +1,4 @@
-module Timecard
+module AsciiTracker
 
   class HHMM < Struct.new :hours, :minutes
 

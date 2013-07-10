@@ -1,7 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'spec_helper'
 
-include Timecard 
-describe "Timecard::Record" do
+include AsciiTracker 
+describe "AsciiTracker::Record" do
   it "finds the class" do
     Slot.should_not == nil
   end

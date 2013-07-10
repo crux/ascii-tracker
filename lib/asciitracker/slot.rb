@@ -1,4 +1,4 @@
-module Timecard
+module AsciiTracker
   class Slot < Record
 
     attr_reader :t_start, :t_end

@@ -1,4 +1,4 @@
-# Timecard
+# ASCII Timecard tracking 
 
 Text file based time tracking, no web app, no mouse clicking.
 
@@ -6,7 +6,7 @@ Text file based time tracking, no web app, no mouse clicking.
 
 Add this line to your application's Gemfile:
 
-    gem 'timecard'
+    gem 'asciitracker'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install timecard
+    $ gem install asciitracker
 
 ## Usage
 

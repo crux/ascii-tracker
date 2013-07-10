@@ -1,4 +1,4 @@
-module Timecard
+module AsciiTracker
   class App
     def initialize(context)
       context.set_default_values :report => "report.txt"
@@ -17,7 +17,7 @@ module Timecard
     def scan context
       filename = context.argv.shift
       puts "scanning file: #{filename}"
-      Timecard::Parser.parse @c, IO.read(filename)
+      AsciiTracker::Parser.parse @c, IO.read(filename)
       #puts "records:\n#{records.join("\n")}"
       #puts "--> 2: #{@c.model}"
       #puts "--> 3: #{@c.model.records}"

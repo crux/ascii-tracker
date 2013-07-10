@@ -6,14 +6,14 @@ require 'bundler/setup'
 require 'pp'
 require 'ostruct'
 require 'applix'
-require 'timecard'
+require 'asciitracker'
 
 # example cmdline:
 #
 #   $ ./slotter.rb --report=2013-02-01--2013-03-01.txt \
-#     scan ~/.timecard \
-#     range 2013-02-01 2013-03-01 \
-#     group report
+#       scan ~/.timecard \
+#       range 2013-02-01 2013-03-01 \
+#       group report
 #
 Applix.main(ARGV, debug: false) do
 
@@ -39,7 +39,7 @@ Applix.main(ARGV, debug: false) do
 
   prolog do |argv, config|
     @context = Context.new(argv, config)
-    @app = Timecard::App.new(@context)
+    @app = AsciiTracker::App.new(@context)
   end
 
   handle(:any) do |*args, opts|

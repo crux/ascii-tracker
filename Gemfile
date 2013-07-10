@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in timecard.gemspec
+# Specify your gem's dependencies in asciitracker.gemspec
 gemspec

@@ -1,6 +1,6 @@
-require 'timecard/rdparser'
+require 'asciitracker/rdparser'
 
-module Timecard
+module AsciiTracker
 
   Parser = RDParser.new do
 
