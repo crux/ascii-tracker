@@ -1,31 +1,30 @@
 require 'spec_helper'
 
 include AsciiTracker 
-describe "AsciiTracker::Record" do
+describe AsciiTracker::Record do
+
   it "finds the class" do
     Slot.should_not == nil
   end
 
   describe "with 10:45 - 12:15" do
-    before :each do 
-      @rec = Slot.new :start=>"10:45", :end=>"12:15", :desc=>"foo bar"
-    end
+    let(:rec) { Slot.new start: "10:45", end: "12:15", desc: "foo bar" }
 
     it "should fit Records" do
       # span are always contained...
-      @rec.covers?(Record.new(:span => 0.5)).should == true
-      @rec.covers?(Record.new(:span => 1.5)).should == true
+      rec.covers?(Record.new(:span => 0.5)).should == true
+      rec.covers?(Record.new(:span => 1.5)).should == true
     end
 
     it "should not cover records with are to long" do
-      @rec.covers?(Record.new(:span => "1:31")).should == false
-      @rec.covers?(Record.new(:span => 5.0)).should == false
+      rec.covers?(Record.new(:span => "1:31")).should == false
+      rec.covers?(Record.new(:span => 5.0)).should == false
     end
 
     it "should calc slot covers" do
-      @rec.covers?(Slot.new(:start=>"10:45", :end=>"12:15")).should == true
-      @rec.covers?(Slot.new(:start=>"10:00", :end=>"12:15")).should == false
-      @rec.covers?(Slot.new(:start=>"10:45", :end=>"13:00")).should == false
+      rec.covers?(Slot.new(:start=>"10:45", :end=>"12:15")).should == true
+      rec.covers?(Slot.new(:start=>"10:00", :end=>"12:15")).should == false
+      rec.covers?(Slot.new(:start=>"10:45", :end=>"13:00")).should == false
     end
   end
   
