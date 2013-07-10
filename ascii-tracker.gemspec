@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'asciitracker/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "asciitracker"
+  spec.name          = "ascii-tracker"
   spec.version       = AsciiTracker::VERSION
   spec.authors       = ["dirk lu\xCC\x88sebrink"]
   spec.email         = ["dirk.luesebrink@gmail.com"]
