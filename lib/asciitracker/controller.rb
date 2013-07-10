@@ -17,18 +17,18 @@ module AsciiTracker
     def new_slot start, stop, desc = nil
       #slot = Slot.new :date=>@day, :start=> start, :end=>stop, :desc=>desc
       @rec = @slot = Slot.new(
-        :start => start, :end =>stop, :desc =>desc, :date => @day.dup
+        start: start, end: stop, desc: desc, date: @day.dup
       )
 
       # updates parant records when this slot is an interruption
       overlaps = @model.find_overlaps(@slot, @day)
-      puts "new slot(#{@slot}), overlaps: #{overlaps}"
+      #puts "new slot(#{@slot}), overlaps: #{overlaps}"
       unless overlaps.empty?
         # parents are covers which are a subset of overlaps
         if parent = @model.find_best_cover(@slot, @day)
           parent.add_interrupt(@slot)
         else
-          raise TimecardException, <<-EOM
+          raise Exception, <<-EOM
           #{@slot}
 overlaps with:
           #{overlaps.first} ...

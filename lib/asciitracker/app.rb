@@ -5,19 +5,10 @@ module AsciiTracker
       @c = Controller.new
     end
 
-    def stop 
-      puts "Stop!"
-    end
-
-    def foo context
-      puts "Hey!"
-      context.forward(self)
-    end
-
     def scan context
       filename = context.argv.shift
       puts "scanning file: #{filename}"
-      AsciiTracker::Parser.parse @c, IO.read(filename)
+      AsciiTracker::Parser.parse(@c, IO.read(filename))
       #puts "records:\n#{records.join("\n")}"
       #puts "--> 2: #{@c.model}"
       #puts "--> 3: #{@c.model.records}"

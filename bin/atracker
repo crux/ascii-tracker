@@ -29,11 +29,9 @@ Applix.main(ARGV, debug: false) do
     end
 
     def forward(target)
-      begin
-        (op = @argv.shift) && target.send(op, self)
-      rescue ArgumentError => e
-        target.send(op)
-      end
+      (op = @argv.shift) and target.send(op, self)
+    rescue ArgumentError => e
+      target.send(op)
     end
   end
 

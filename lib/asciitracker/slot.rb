@@ -80,21 +80,21 @@ module AsciiTracker
     def add_interrupt slot_or_span
       slr = slot_or_span # shortcut
       unless covers? slr
-        raise TimecardException, "interrupt not covered! #{slr}"
+        raise Exception, "interrupt not covered! #{slr}"
       end
 
       unless slr.span <= span
-        raise TimecardException, "'#{self}' overload(#{span}): #{slr}"
+        raise Exception, "'#{self}' overload(#{span}): #{slr}"
       end
-      #raise TimecardException, "overload: #{slr}" unless slr.span <= span
+      #raise Exception, "overload: #{slr}" unless slr.span <= span
 
       # new interrupts may not overlap with existing ones!
       if slr.respond_to?(:t_start) 
-        #raise TimecardException, "overlap: #{slr}" if @interrupts.any? do |i| 
+        #raise Exception, "overlap: #{slr}" if @interrupts.any? do |i| 
         #    slr.overlaps? i
         #end
         if @interrupts.any? { |rec| slr.overlaps? rec }
-          raise TimecardException, "overlap: #{slr}"
+          raise Exception, "overlap: #{slr}"
         end
       end
 
