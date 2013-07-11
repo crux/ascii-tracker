@@ -12,13 +12,13 @@ module AsciiTracker
 
     def push_line line
       line.each do |rec|
-        puts "--> #{rec.join("|")}"
+        #puts "--> #{rec.join("|")}"
         @model.send "new_#{rec.shift}", *rec
       end
     end
 
     token(/\s+/)
-    token(/\d\d\d\d-\d\d-\d\d/)     { |txt| puts "2:#{txt}"; Date.parse(txt) }
+    token(/\d\d\d\d-\d\d-\d\d/)     { |txt| Date.parse(txt) }
     token(/([012]?\d):([0-5]\d)/)   { |txt| HHMM.new(txt) }
     token(/\d\d?(.\d\d?)?/)            { |m| m.to_f }
     token(/-/)                      { |m| m }

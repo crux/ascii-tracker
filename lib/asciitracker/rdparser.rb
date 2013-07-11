@@ -34,7 +34,7 @@ class RDParser
          match = tok.pattern.match(string)
          if match
              s_tok = match.to_s
-puts "(#{s_tok})" unless /^\s+$/.match(s_tok)
+#puts "(#{s_tok})" unless /^\s+$/.match(s_tok)
 #puts "<<< #{s_tok} | #{tok.pattern} >>>"
            @tokens << tok.block.call(s_tok) if tok.block
            string = match.post_match

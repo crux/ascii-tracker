@@ -55,7 +55,8 @@ overlaps with:
 
     # match(/@.+/, String) { |project_id, re| [project_id[1..-1], Regexp.new(re)] }
     def new_project_re project_id, re
-      puts "project expression: #{project_id}, #{re}"
+      #puts "project expression: #{project_id}, #{re}"
+      #puts "project: #{project_id}"
       @model.projects[project_id].push(re)
     end
   end

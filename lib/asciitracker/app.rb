@@ -1,7 +1,7 @@
 module AsciiTracker
   class App
     def initialize(context)
-      context.set_default_values :report => "report.txt"
+      context.set_default_values(report: "report.txt")
       @c = Controller.new
     end
 
@@ -49,21 +49,21 @@ module AsciiTracker
       workcount = weekdays_in_range(*@selection_range) \
         - (sickcount = @sickdays.size) \
         - (holicount = @holidays.size) \
-        - (freecount = @freedays.size) \
+        - (freecount = @freedays.size)
 
-        netto = total = @selection.inject(0.0) { |sum, rec| sum + rec.span }
+      netto = total = @selection.inject(0.0) { |sum, rec| sum + rec.span }
 
-            %w{ishapes pause ueberstunden holidays feiertag}.each do |tag|
-              netto -= (pause = @groups[tag].total rescue 0)
-            end
-            #pause = @groups["pause"].total rescue 0
-            #netto -= pause
-            #abbau = @groups["ueberstundenabbau"].total rescue 0
-            #netto -= abbau
-            #netto -= @groups["holidays"].total rescue 0
-            #netto -= @groups["feiertag"].total rescue 0
+      %w{ishapes pause ueberstunden holidays feiertag}.each do |tag|
+        netto -= (pause = @groups[tag].total rescue 0)
+      end
+      #pause = @groups["pause"].total rescue 0
+      #netto -= pause
+      #abbau = @groups["ueberstundenabbau"].total rescue 0
+      #netto -= abbau
+      #netto -= @groups["holidays"].total rescue 0
+      #netto -= @groups["feiertag"].total rescue 0
 
-            report.puts(<<-EOT % [netto, total])
+      report.puts(<<-EOT % [netto, total])
 reporting period: #{@selection_range.join(" until ")}
 #{@selection.size} records in #{@groups.size} groups
 #{@workdays.size} days booked(#{workcount} working(weekdays), #{sickcount} sickdays, #{holicount} holidays, #{@freedays.size} freeday)
@@ -74,34 +74,35 @@ freedays: #{@freedays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
 holidays: #{@holidays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
 sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
             ---
-            EOT
+      EOT
 
-@groups.each do |project_id, group| 
-  #puts ">>>> #{project_id}:\n#{records.join("\n")}"
-  #total = group.records.inject(0.0) { |sum, rec| sum + rec.span }
-  #h1 = "#{group.total} hours #{group.project_id}"
-  if context.values.brief
-    p = [group.total, group.project_id]
-    report.puts("%6.2f hours #{group.project_id}" % p)
-    next
-  end
+      @groups.each do |project_id, group| 
+        #puts ">>>> #{project_id}:\n#{records.join("\n")}"
+        #total = group.records.inject(0.0) { |sum, rec| sum + rec.span }
+        #h1 = "#{group.total} hours #{group.project_id}"
+        if context.values.brief
+          p = [group.total, group.project_id]
+          report.puts("%6.2f hours #{group.project_id}" % p)
+          next
+        end
 
-  headline = group_head(group, workcount)
-  report.puts <<-EOT
+        headline = group_head(group, workcount)
+        report.puts <<-EOT
 
-  #{headline}
-  #{'-' * headline.size}
-                    EOT
-  group.records.each do |rec| 
-    #report.puts ("%5.2f" % rec.span) << "\t#{rec}"
-    report.puts(("%s(%5.2f)" % [HHMM.new(rec.span), rec.span]) << "\t#{rec}")
-  end
-end
-report.puts <<-TXT
+#{headline}
+#{'-' * headline.size}
+        EOT
+        group.records.each do |rec| 
+          #report.puts ("%5.2f" % rec.span) << "\t#{rec}"
+          report.puts(("%s(%5.2f)" % [HHMM.new(rec.span), rec.span]) << "\t#{rec}")
+        end
+      end
+
+      report.puts <<-TXT
 <<< end of reporting period: #{@selection_range.join(" until ")}
+      TXT
 
-            TXT
-context.forward(self)
+      context.forward(self)
     end
 
     # grouping records by projects
@@ -173,7 +174,7 @@ context.forward(self)
       thours = "%.2f" % group.total
       hours = "%.2f" % h
       d,h,m = Record.hours_to_dhm(group.total)
-          "#{thours} hours | #{d}d #{h}h #{m}m | #{per_day} hours/day: #{group.project_id}"
+      "#{thours} hours | #{d}d #{h}h #{m}m | #{per_day} hours/day: #{group.project_id}"
     end
   end
 end
