@@ -4,17 +4,9 @@ Text file based time tracking, no web app, no mouse clicking.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Install it as:
 
-    gem 'asciitracker'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install asciitracker
+    $ gem install ascii-tracker
 
 ## Usage
 
