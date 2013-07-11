@@ -60,147 +60,149 @@ describe AsciiTracker::Record do
   end
 
   describe "with base slot" do
-    before :each do 
-      @base = Slot.new :start => "5:00", :end => "6:00"
-    end
+    let(:base) { Slot.new start: '5:00', end: '6:00' }
 
     it "sould calc overlaps" do
       a = Slot.new :start => "4:00", :end => "4:30"
-      @base.overlaps?(a).should == false
+      base.overlaps?(a).should == false
 
       a1 = Slot.new :start => "4:00", :end => "5:00"
-      @base.overlaps?(a1).should == false
+      base.overlaps?(a1).should == false
 
       b = Slot.new :start => "1:00", :end => "5:30"
-      @base.overlaps?(b).should == true
+      base.overlaps?(b).should == true
 
       c = Slot.new :start => "1:00", :end => "7:00"
-      @base.overlaps?(c).should == true
+      base.overlaps?(c).should == true
 
       d = Slot.new :start => "5:15", :end => "5:45"
-      @base.overlaps?(d).should == true
+      base.overlaps?(d).should == true
 
       d1 = Slot.new :start => "5:00", :end => "5:45"
-      @base.overlaps?(d1).should == true
+      base.overlaps?(d1).should == true
 
       d2= Slot.new :start => "5:15", :end => "6:00"
-      @base.overlaps?(d2).should == true
+      base.overlaps?(d2).should == true
 
       e = Slot.new :start => "5:30", :end => "7:00"
-      @base.overlaps?(e).should == true
+      base.overlaps?(e).should == true
 
       f = Slot.new :start => "7:00", :end => "9:00"
-      @base.overlaps?(f).should == false
+      base.overlaps?(f).should == false
 
       f1 = Slot.new :start => "6:00", :end => "9:00"
-      @base.overlaps?(f1).should == false
+      base.overlaps?(f1).should == false
     end
   end
 
   describe "with base over around midnight" do
-    before :each do 
-      @base = Slot.new :start => "22:00", :end => "02:00"
-    end
+    let(:base) { Slot.new start: '22:00', end: '02:00' }
 
     it "should calc overlaps around midnight" do
       # before
       a = Slot.new :start => "20:00", :end => "21:59"
-      @base.covers?(a).should == false
-      @base.overlaps?(a).should == false
+      base.covers?(a).should == false
+      base.overlaps?(a).should == false
       # after
       a = Slot.new :start => "02:01", :end => "04:00"
-      @base.covers?(a).should == false
-      @base.overlaps?(a).should == false
+      base.covers?(a).should == false
+      base.overlaps?(a).should == false
 
       a = Slot.new :start => "23:00", :end => "23:10"
-      puts " -- #{[@base.t_start, @base.t_end, a.t_start, a.t_end].join(', ')}"
-      @base.covers?(a).should == true
-      @base.overlaps?(a).should == true
+      puts " -- #{[base.t_start, base.t_end, a.t_start, a.t_end].join(', ')}"
+      base.covers?(a).should == true
+      base.overlaps?(a).should == true
 
       a = Slot.new :start => "23:00", :end => "01:00"
-      puts " -- #{[@base.t_start, @base.t_end, a.t_start, a.t_end].join(', ')}"
-      @base.covers?(a).should == true
-      @base.overlaps?(a).should == true
+      puts " -- #{[base.t_start, base.t_end, a.t_start, a.t_end].join(', ')}"
+      base.covers?(a).should == true
+      base.overlaps?(a).should == true
 
       a = Slot.new :start => "01:00", :end => "01:10"
-      puts " -- #{[@base.t_start, @base.t_end, a.t_start, a.t_end].join(', ')}"
-      @base.overlaps?(a).should == true
-      @base.covers?(a).should == true
+      puts " -- #{[base.t_start, base.t_end, a.t_start, a.t_end].join(', ')}"
+      base.overlaps?(a).should == true
+      base.covers?(a).should == true
+    end
+  end
+
+  context 'interrups' do
+    
+    let(:rec) { Slot.new start: '10:00', end: '12:30', desc: 'whatever' }
+    it 'inits slots as uninterrupted' do
+      rec.interrupts.length.should be(0)
+    end
+
+    context 'with spans' do
+      let(:one_hour) { Record.new span: 1, desc: 'one hour of wasted time' }
+
+      it 'aggregates interrupts and subtracts the interupt time from record' do
+        expect { rec.add_interrupt one_hour }.not_to raise_error
+        rec.interrupts.length.should eq(1)
+        rec.span.should eq(1.5)
+        
+        expect { rec.add_interrupt one_hour }.not_to raise_error
+        rec.interrupts.length.should eq(2)
+        rec.span.should eq(0.5)
+      end
+
+      it 'raises error on interrupt not fitting the record' do
+        expect { rec.add_interrupt one_hour }.not_to raise_error
+        expect { rec.add_interrupt one_hour }.not_to raise_error
+        expect { rec.add_interrupt one_hour }.to raise_error(
+          AsciiTracker::Exception, /overload\(0.5\).*one hour of wasted time/
+        )
+      end
+    end
+
+    context 'with other slots' do
+      let(:rec) { Slot.new start: '10:00', end: '12:30', desc: 'foo bar' }
+
+      it 'aggregates interrupts and subtracts the interupt time from record' do
+        rec.add_interrupt(Slot.new start: '10:00', end: '12:00', desc: '?')
+        rec.interrupts.length.should eq(1)
+        rec.span.should eq(0.5)
+
+        rec.add_interrupt(Slot.new start: '12:00', end: '12:15', desc: '?')
+        rec.interrupts.length.should eq(2)
+        rec.span.should eq(0.25)
+
+        rec.add_interrupt(Slot.new start: '12:15', end: '12:30', desc: '?')
+        rec.interrupts.length.should eq(3)
+        rec.span.should eq(0.0)
+      end
+ 
+      it 'bails out on records overlapping start or end time' do
+        expect { 
+          rec.add_interrupt(Slot.new start: '12:30', end: '13:00', desc: 'X')
+        }.to raise_error(
+          AsciiTracker::Exception, /interrupt not covered!.*12:30-13:00/
+        )
+
+        expect { 
+          rec.add_interrupt(Slot.new start: '09:30', end: '11:00', desc: 'X')
+        }.to raise_error(
+          AsciiTracker::Exception, /interrupt not covered!.*09:30-11:00/
+        )
+
+        expect { 
+          rec.add_interrupt(Slot.new start: '09:59', end: '12:01', desc: 'X')
+        }.to raise_error(
+          AsciiTracker::Exception, /interrupt not covered!.*09:59-12:01/
+        )
+      end
+
+      it 'raises error on stuffin slot to overfilled record' do
+        rec.add_interrupt(Slot.new start: '10:00', end: '12:30', desc: '?')
+        rec.interrupts.length.should eq(1)
+        rec.span.should eq(0.0) 
+        # rec is full now
+
+        expect { 
+          rec.add_interrupt(Slot.new start: '10:01', end: '10:02', desc: 'X')
+        }.to raise_error(
+          AsciiTracker::Exception, /overload\(0.0\): 2013-07-11 10:01-10:02  X/
+        )
+      end
     end
   end
 end
-__END__
-
-class SlotTest < Test::Unit::TestCase
-
-  include Timecard
-
-
-  def test_overlaps_around_midnight
-    puts "\n--> #{self}"
-
-    base = Slot.new :start => "22:00", :end => "02:00"
-
-    # before
-    a = Slot.new :start => "20:00", :end => "21:59"
-    assert ! base.covers?(a)
-    assert ! base.overlaps?(a)
-    # after
-    a = Slot.new :start => "02:01", :end => "04:00"
-    assert ! base.covers?(a)
-    assert ! base.overlaps?(a)
-
-    a = Slot.new :start => "23:00", :end => "23:10"
-    puts " -- #{[base.t_start, base.t_end, a.t_start, a.t_end].join(', ')}"
-    assert base.covers?(a)
-    assert base.overlaps?(a)
-
-    a = Slot.new :start => "23:00", :end => "01:00"
-    puts " -- #{[base.t_start, base.t_end, a.t_start, a.t_end].join(', ')}"
-    assert base.covers?(a)
-    assert base.overlaps?(a)
-
-    a = Slot.new :start => "01:00", :end => "01:10"
-    puts " -- #{[base.t_start, base.t_end, a.t_start, a.t_end].join(', ')}"
-    assert base.overlaps?(a)
-    assert base.covers?(a)
-  end
-
-    def test_add_interrupt_slot_or_span
-        puts "\n--> #{self}"
-        rec = Slot.new :start=>"10:00", :end=>"12:30", :desc=>"foo bar"
-        assert_equal 2.5, rec.span 
-        assert_equal 0, rec.interrupts.length
-
-        wasted_time = Record.new :span => 1, :desc => "one hour of wasted time"
-        rec.add_interrupt wasted_time
-        assert_equal 1, rec.interrupts.length
-        assert_equal 1.5, rec.span 
-        rec.add_interrupt wasted_time
-        assert_equal 2, rec.interrupts.length
-        assert_equal 0.5, rec.span 
-
-        assert_raise(TimecardException) { rec.add_interrupt(wasted_time) }
-
-        rec = Slot.new :start=>"10:00", :end=>"12:30", :desc=>"foo bar"
-        slot = Slot.new :start=>"10:00", :end => "12:00", :desc => "intruppt"
-        rec.add_interrupt(slot)
-        assert_equal 0.5, rec.span 
-
-        slot = Slot.new :start=>"12:30", :end => "13:00", :desc => "intruppt"
-        assert_raise(TimecardException) { rec.add_interrupt(slot) }
-        slot = Slot.new :start=>"09:30", :end => "11:00", :desc => "intruppt"
-        assert_raise(TimecardException) { rec.add_interrupt(slot) }
-
-        slot = Slot.new :start=>"12:00", :end => "12:15", :desc => "intruppt"
-        rec.add_interrupt(slot)
-        assert_equal 0.25, rec.span 
-        slot = Slot.new :start=>"12:15", :end => "12:30", :desc => "intruppt"
-        rec.add_interrupt(slot)
-        assert_equal 0.0, rec.span 
-
-        slot = Slot.new :start=>"12:15", :end => "12:30", :desc => "intruppt"
-        assert_raise(TimecardException) { rec.add_interrupt(slot) }
-    end
-end
-
