@@ -149,7 +149,7 @@ describe AsciiTracker::Record do
         expect { rec.add_interrupt one_hour }.not_to raise_error
         expect { rec.add_interrupt one_hour }.not_to raise_error
         expect { rec.add_interrupt one_hour }.to raise_error(
-          AsciiTracker::Exception, /overload\(0.5\).*one hour of wasted time/
+          AsciiTracker::Exception, /overload\(0.5\): [\d-]{10}.*one hour of wasted time/
         )
       end
     end
@@ -200,7 +200,7 @@ describe AsciiTracker::Record do
         expect { 
           rec.add_interrupt(Slot.new start: '10:01', end: '10:02', desc: 'X')
         }.to raise_error(
-          AsciiTracker::Exception, /overload\(0.0\): 2013-07-11 10:01-10:02  X/
+          AsciiTracker::Exception, /overload\(0.0\): [\d-]{10} 10:01-10:02  X/
         )
       end
     end
