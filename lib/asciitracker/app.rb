@@ -16,25 +16,6 @@ module AsciiTracker
       context.forward(self)
     end
 
-    def group(context)
-      @groups = group_by_project
-      @groups.each do |project_id, records| 
-        @groups[project_id] = {
-          project_id: project_id, 
-          records: records,
-          total: records.inject(0.0) { |sum, rec| sum + rec.span }
-        }
-      end
-
-      # XXX: this only works when assuming full days
-      @holidays = @groups["holidays"].records rescue []
-      @freedays = @groups["feiertag"].records rescue []
-      @sickdays = @groups["sickdays"].records rescue []
-      @abbau = @groups["ueberstundenabbau"].records rescue []
-
-      context.forward(self)
-    end
-
     def weekdays_in_range(first_day, last_day)
       range = (first_day...last_day)
       #(t..(t+7)).select { |e|  [0,6].include? e.wday  }.map { |e| e.to_s 
@@ -43,6 +24,8 @@ module AsciiTracker
     end
 
     def report(context)
+      group(@c.model.projects)
+
       append_or_overwrite = context.values.append ? "a+" : "w"
       report = File.open context.values.report, append_or_overwrite
 
@@ -105,26 +88,6 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       context.forward(self)
     end
 
-    # grouping records by projects
-    def group_by_project
-
-      groups = {} 
-      groups[:unaccounted] = @selection.dup
-
-      @c.model.projects.each do |project_id, expressions|
-        group = (groups[project_id] ||= [])
-        expressions.each do |re| 
-          matching_records, rest = groups[:unaccounted].partition do |rec| 
-            re.match(rec.desc) 
-          end
-          group.push(*matching_records)
-          groups[:unaccounted] = rest
-        end
-      end
-      groups.delete_if { |k,v| v.nil? or v.empty? }
-      groups
-    end
-
     def range(context)
       a = Date.parse(context.argv.shift)
       b = Date.parse(context.argv.shift)
@@ -152,6 +115,25 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       context.forward(self)
     end
 
+    private
+
+    def group(projects)
+      @groups = group_by_project(projects)
+      @groups.each do |project_id, records| 
+        @groups[project_id] = {
+          project_id: project_id, 
+          records: records,
+          total: records.inject(0.0) { |sum, rec| sum + rec.span }
+        }
+      end
+
+      # XXX: this only works when assuming full days
+      @holidays = @groups["holidays"].records rescue []
+      @freedays = @groups["feiertag"].records rescue []
+      @sickdays = @groups["sickdays"].records rescue []
+      @abbau = @groups["ueberstundenabbau"].records rescue []
+    end
+
     def select_in_range first_day, last_day
       @selection = []
       @workdays = []
@@ -165,7 +147,6 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       end
       puts "#{@selection.size} records in range"
     end
-    private :select
 
     def group_head group, work_days
       per_day  = "%.3f" % [group.total / work_days]
@@ -176,6 +157,27 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       d,h,m = Record.hours_to_dhm(group.total)
       "#{thours} hours | #{d}d #{h}h #{m}m | #{per_day} hours/day: #{group.project_id}"
     end
+
+    # grouping records by projects
+    def group_by_project projects
+
+      groups = {} 
+      groups[:unaccounted] = @selection.dup
+
+      projects.each do |project_id, project_matchers|
+        group = (groups[project_id] ||= [])
+        project_matchers.each do |re| 
+          matching_records, rest = groups[:unaccounted].partition do |rec| 
+            re.match(rec.desc) 
+          end
+          group.push(*matching_records)
+          groups[:unaccounted] = rest
+        end
+      end
+      groups.delete_if { |k,v| v.nil? or v.empty? }
+      groups
+    end
+
   end
 end
 
