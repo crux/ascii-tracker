@@ -9,6 +9,7 @@ require 'asciitracker/slot'
 require 'asciitracker/model'
 require 'asciitracker/controller'
 require 'asciitracker/parser'
+require 'asciitracker/ranges'
 require 'asciitracker/app'
 
 module AsciiTracker
