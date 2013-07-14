@@ -27,7 +27,7 @@ module AsciiTracker
       group(@c.model.projects)
 
       append_or_overwrite = context.values.append ? "a+" : "w"
-      report = File.open context.values.report, append_or_overwrite
+      report = File.open(context.values.report, append_or_overwrite)
 
       workcount = weekdays_in_range(*@selection_range) \
         - (sickcount = @sickdays.size) \
@@ -92,8 +92,8 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       a = Date.parse(context.argv.shift)
       b = Date.parse(context.argv.shift)
       puts "selected date range: #{a} #{b}"
-
       select_in_range(a, b)
+
       context.forward(self)
     end
 
