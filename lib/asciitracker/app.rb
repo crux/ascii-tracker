@@ -20,9 +20,24 @@ module AsciiTracker
       #puts "--> 3: #{@c.model.records}"
     end
 
-    def render_txt(options = {})
-      group(@c.model.projects)
+    def select_range(args) 
+      a = args.shift
+      range = if a.match /20[0-9]{2}-[01]\d-[0-3]\d/
+                Range.new(Date.parse(a), Date.parse(args.shift))
+              else
+                AsciiTracker::Ranges.parse(a)
+              end
 
+      puts "selected date range: #{range.begin} #{range.end}"
+      select_in_range(range.begin, range.end)
+    end
+
+    def report(args, options = {})
+      select_range(args)
+      group(@c.model.projects)
+    end
+
+    def txt(options = {})
       outfile = if options[:report] and options[:report] != '-'
                   File.open(options[:report], (options[:append] ? "a+" : "w"))
                 else

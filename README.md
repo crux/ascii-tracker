@@ -11,6 +11,10 @@ Install it as:
 ## Usage
 
 TODO: Write usage instructions here
+ 
+render report of lasts month activties to stdout:
+
+  $ atracker scan ~/.timecard report last-month txt
 
 ## Contributing
 
