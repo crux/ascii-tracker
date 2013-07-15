@@ -2,7 +2,7 @@ module AsciiTracker
   class App
 
     Defaults = {
-      report: 'report.txt'
+      outfile: nil, # defaults to $stdout
     }
 
     def initialize #(context)
@@ -20,18 +20,14 @@ module AsciiTracker
       #puts "--> 3: #{@c.model.records}"
     end
 
-    def weekdays_in_range(first_day, last_day)
-      range = (first_day...last_day)
-      #(t..(t+7)).select { |e|  [0,6].include? e.wday  }.map { |e| e.to_s 
-      puts "================#{range}"
-      range.reject { |e| [0,6].include? e.wday }.size
-    end
-
     def render_txt(options = {})
       group(@c.model.projects)
 
-      append_or_overwrite = options[:append] ? "a+" : "w"
-      report = File.open(options[:report], append_or_overwrite)
+      outfile = if options[:report] and options[:report] != '-'
+                  File.open(options[:report], (options[:append] ? "a+" : "w"))
+                else
+                  $stdout # nil or '-' means stdout
+                end
 
       workcount = weekdays_in_range(*@selection_range) \
         - (sickcount = @sickdays.size) \
@@ -50,7 +46,7 @@ module AsciiTracker
       #netto -= @groups["holidays"].total rescue 0
       #netto -= @groups["feiertag"].total rescue 0
 
-      report.puts(<<-EOT % [netto, total])
+      outfile.puts(<<-EOT % [netto, total])
 reporting period: #{@selection_range.join(" until ")}
 #{@selection.size} records in #{@groups.size} groups
 #{@workdays.size} days booked(#{workcount} working(weekdays), #{sickcount} sickdays, #{holicount} holidays, #{@freedays.size} freeday)
@@ -69,23 +65,23 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
         #h1 = "#{group.total} hours #{group.project_id}"
         if options[:brief]
           p = [group.total, group.project_id]
-          report.puts("%6.2f hours #{group.project_id}" % p)
+          outfile.puts("%6.2f hours #{group.project_id}" % p)
           next
         end
 
         headline = group_head(group, workcount)
-        report.puts <<-EOT
+        outfile.puts <<-EOT
 
 #{headline}
 #{'-' * headline.size}
         EOT
         group.records.each do |rec| 
           #report.puts ("%5.2f" % rec.span) << "\t#{rec}"
-          report.puts(("%s(%5.2f)" % [HHMM.new(rec.span), rec.span]) << "\t#{rec}")
+          outfile.puts(("%s(%5.2f)" % [HHMM.new(rec.span), rec.span]) << "\t#{rec}")
         end
       end
 
-      report.puts <<-TXT
+      outfile.puts <<-TXT
 <<< end of reporting period: #{@selection_range.join(" until ")}
       TXT
     end
@@ -97,6 +93,15 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       select_in_range(a, b)
     end
 
+    private
+
+    def weekdays_in_range(first_day, last_day)
+      range = (first_day...last_day)
+      #(t..(t+7)).select { |e|  [0,6].include? e.wday  }.map { |e| e.to_s 
+      puts "================#{range}"
+      range.reject { |e| [0,6].include? e.wday }.size
+    end
+=begin
     def before(context)
       a = Date.parse(context.argv.shift)
       select_in_range(Date.today - (365*10), a)
@@ -114,8 +119,7 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       select_in_range(a, a+1)
       context.forward(self)
     end
-
-    private
+=end
 
     def group(projects)
       @groups = group_by_project(projects)
