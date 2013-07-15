@@ -15,12 +15,14 @@ require 'asciitracker'
 #       range 2013-02-01 2013-03-01 \
 #       group report
 #
-Applix.main(ARGV, debug: false) do
+Applix.main(ARGV, AsciiTracker::App::Defaults) do
 
+=begin
   class Context 
-    attr_reader :argv, :values
+    attr_reader :argv, :values, :options
     def initialize argv, config
       @argv = argv
+      @options = config.dup
       @values = OpenStruct.new(config)
     end
 
@@ -30,20 +32,31 @@ Applix.main(ARGV, debug: false) do
 
     def forward(target)
       if(op = @argv.shift)
-        puts " --> #{op}(#{@argv.join ', '})"
+        puts " --(#{op})-- (#{@argv.join ', '})"
         target.send(op, self)
       end
     rescue ArgumentError => e
       target.send(op)
     end
   end
+=end
 
   prolog do |argv, config|
-    @context = Context.new(argv, config)
-    @app = AsciiTracker::App.new(@context)
+    #@context = Context.new(argv, config)
+    @app = AsciiTracker::App.new #(@context)
   end
 
   handle(:any) do |*args, opts|
-    @context.forward(@app)
+    #@context.forward(@app)
+    while(0 < args.size) do
+      begin
+        if(op = args.shift)
+          puts " --(#{op})-- (#{args.join ', '})"
+          @app.send(op, args, opts)
+        end
+      rescue ArgumentError => e
+        @app.send(op, opts)
+      end
+    end
   end
 end

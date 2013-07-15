@@ -1,19 +1,23 @@
 module AsciiTracker
   class App
-    def initialize(context)
-      context.set_default_values(report: "report.txt")
+
+    Defaults = {
+      report: 'report.txt'
+    }
+
+    def initialize #(context)
+      #@options = Defaults.merge(context.options)
+      #context.set_default_values(report: "report.txt")
       @c = Controller.new
     end
 
-    def scan context
-      filename = context.argv.shift
+    def scan args, _ = {}
+      filename = args.shift
       puts "scanning file: #{filename}"
       AsciiTracker::Parser.parse(@c, IO.read(filename))
       #puts "records:\n#{records.join("\n")}"
       #puts "--> 2: #{@c.model}"
       #puts "--> 3: #{@c.model.records}"
-
-      context.forward(self)
     end
 
     def weekdays_in_range(first_day, last_day)
@@ -23,11 +27,11 @@ module AsciiTracker
       range.reject { |e| [0,6].include? e.wday }.size
     end
 
-    def report(context)
+    def render_txt(options = {})
       group(@c.model.projects)
 
-      append_or_overwrite = context.values.append ? "a+" : "w"
-      report = File.open(context.values.report, append_or_overwrite)
+      append_or_overwrite = options[:append] ? "a+" : "w"
+      report = File.open(options[:report], append_or_overwrite)
 
       workcount = weekdays_in_range(*@selection_range) \
         - (sickcount = @sickdays.size) \
@@ -63,7 +67,7 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
         #puts ">>>> #{project_id}:\n#{records.join("\n")}"
         #total = group.records.inject(0.0) { |sum, rec| sum + rec.span }
         #h1 = "#{group.total} hours #{group.project_id}"
-        if context.values.brief
+        if options[:brief]
           p = [group.total, group.project_id]
           report.puts("%6.2f hours #{group.project_id}" % p)
           next
@@ -84,17 +88,13 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       report.puts <<-TXT
 <<< end of reporting period: #{@selection_range.join(" until ")}
       TXT
-
-      context.forward(self)
     end
 
-    def range(context)
-      a = Date.parse(context.argv.shift)
-      b = Date.parse(context.argv.shift)
+    def range(args, _ = {})
+      a = Date.parse(args.shift)
+      b = Date.parse(args.shift)
       puts "selected date range: #{a} #{b}"
       select_in_range(a, b)
-
-      context.forward(self)
     end
 
     def before(context)
