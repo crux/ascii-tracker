@@ -14,15 +14,37 @@ describe AsciiTracker::Ranges do
       Ranges.last_monday.should eq(Date.new(2013, 9, 9))
     end
 
+    it 'parses last_year' do
+      (w = Ranges.parse('last-year')).should be_kind_of(Range)
+      w.begin.year.should eq(2012)
+      w.begin.month.should eq(1)
+      w.begin.day.should eq(1)
+
+      w.end.year.should eq(2013)
+      w.end.month.should eq(1)
+      w.end.day.should eq(1)
+    end
+
     it 'knows last year' do
       (w = Ranges.last_year).should be_kind_of(Range)
       w.begin.year.should eq(2012)
       w.begin.month.should eq(1)
       w.begin.day.should eq(1)
 
-      w.end.year.should eq(2012)
-      w.end.month.should eq(12)
-      w.end.day.should eq(31)
+      w.end.year.should eq(2013)
+      w.end.month.should eq(1)
+      w.end.day.should eq(1)
+    end
+
+    it 'parses this_year' do
+      (w = Ranges.parse('this-year')).should be_kind_of(Range)
+      w.begin.year.should eq(2013)
+      w.begin.month.should eq(1)
+      w.begin.day.should eq(1)
+
+      w.end.year.should eq(2014)
+      w.end.month.should eq(1)
+      w.end.day.should eq(1)
     end
 
     it 'knows this year, year to date' do
@@ -31,9 +53,20 @@ describe AsciiTracker::Ranges do
       w.begin.month.should eq(1)
       w.begin.day.should eq(1)
 
+      w.end.year.should eq(2014)
+      w.end.month.should eq(1)
+      w.end.day.should eq(1)
+    end
+
+    it 'parses last_week' do
+      (w = Ranges.parse('last_week')).should be_kind_of(Range)
+      w.begin.year.should eq(2013)
+      w.begin.month.should eq(9)
+      w.begin.day.should eq(2)
+
       w.end.year.should eq(2013)
-      w.end.month.should eq(12)
-      w.end.day.should eq(31)
+      w.end.month.should eq(9)
+      w.end.day.should eq(9)
     end
 
     it 'knows last week' do
@@ -44,7 +77,7 @@ describe AsciiTracker::Ranges do
 
       w.end.year.should eq(2013)
       w.end.month.should eq(9)
-      w.end.day.should eq(8)
+      w.end.day.should eq(9)
     end
 
     it 'knows this week' do
@@ -55,7 +88,7 @@ describe AsciiTracker::Ranges do
 
       w.end.year.should eq(2013)
       w.end.month.should eq(9)
-      w.end.day.should eq(15)
+      w.end.day.should eq(16)
     end
 
     it 'knows last month' do
@@ -65,8 +98,8 @@ describe AsciiTracker::Ranges do
       m.begin.day.should eq(1)
 
       m.end.year.should eq(2013)
-      m.end.month.should eq(8)
-      m.end.day.should eq(31)
+      m.end.month.should eq(9)
+      m.end.day.should eq(1)
     end
 
     it 'knows this month' do
@@ -76,8 +109,8 @@ describe AsciiTracker::Ranges do
       m.begin.day.should eq(1)
 
       m.end.year.should eq(2013)
-      m.end.month.should eq(9)
-      m.end.day.should eq(30)
+      m.end.month.should eq(10)
+      m.end.day.should eq(1)
     end
   end
 end
