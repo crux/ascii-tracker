@@ -97,32 +97,6 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       puts "================#{range}"
       range.reject { |e| [0,6].include? e.wday }.size
     end
-=begin
-    def range(args, _ = {})
-      a = Date.parse(args.shift)
-      b = Date.parse(args.shift)
-      puts "selected date range: #{a} #{b}"
-      select_in_range(a, b)
-    end
-
-    def before(context)
-      a = Date.parse(context.argv.shift)
-      select_in_range(Date.today - (365*10), a)
-      context.forward(self)
-    end
-
-    def after(context)
-      a = Date.parse(context.argv.shift)
-      select_in_range(a, Date.today+1)
-      context.forward(self)
-    end
-
-    def today(context)
-      a = Date.today
-      select_in_range(a, a+1)
-      context.forward(self)
-    end
-=end
 
     def group(projects)
       @groups = group_by_project(projects)
@@ -141,19 +115,12 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
       @abbau = @groups["ueberstundenabbau"].records rescue []
     end
 
-    def parse_date_range(args)
-      a = args.shift
-      if a.match /20[0-9]{2}-[01]\d-[0-3]\d/
-        Range.new(Date.parse(a), Date.parse(args.shift))
-      else
-        AsciiTracker::Ranges.parse(a)
-      end
-    end
-
     def select_in_range args
-      range = parse_date_range(args)
+      range, args_rest = AsciiTracker::Ranges.parse(*args)
+      args.replace(args_rest) # args manipulation must be also be returned 
       puts "selected date range: #{range.begin} #{range.end}"
 
+      #select_in_range(range.begin, range.end)
       @selection = []
       @workdays = []
       @selection_range = [range.begin, range.end]
@@ -200,3 +167,30 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
   end
 end
 
+__END__
+=begin
+    def range(args, _ = {})
+      a = Date.parse(args.shift)
+      b = Date.parse(args.shift)
+      puts "selected date range: #{a} #{b}"
+      select_in_range(a, b)
+    end
+
+    def before(context)
+      a = Date.parse(context.argv.shift)
+      select_in_range(Date.today - (365*10), a)
+      context.forward(self)
+    end
+
+    def after(context)
+      a = Date.parse(context.argv.shift)
+      select_in_range(a, Date.today+1)
+      context.forward(self)
+    end
+
+    def today(context)
+      a = Date.today
+      select_in_range(a, a+1)
+      context.forward(self)
+    end
+=end

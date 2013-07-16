@@ -6,6 +6,18 @@ describe AsciiTracker::Ranges do
 
   it { should be_kind_of(Module) }
 
+  it 'parses to date param range args' do
+    (w, _ = Ranges.parse('2012-01-01', '2013-01-01')).should be
+    w.should be_kind_of(Range)
+    w.begin.year.should eq(2012)
+    w.begin.month.should eq(1)
+    w.begin.day.should eq(1)
+
+    w.end.year.should eq(2013)
+    w.end.month.should eq(1)
+    w.end.day.should eq(1)
+  end
+
   context 'today' do
     let(:today) { Date.new(2013, 9, 13) }
     before { Date.stub(:today) { today } }
@@ -15,7 +27,8 @@ describe AsciiTracker::Ranges do
     end
 
     it 'parses last_year' do
-      (w = Ranges.parse('last-year')).should be_kind_of(Range)
+      (w, _ = Ranges.parse('last-year')).should be
+      w.should be_kind_of(Range)
       w.begin.year.should eq(2012)
       w.begin.month.should eq(1)
       w.begin.day.should eq(1)
@@ -37,7 +50,8 @@ describe AsciiTracker::Ranges do
     end
 
     it 'parses this_year' do
-      (w = Ranges.parse('this-year')).should be_kind_of(Range)
+      (w, _ = Ranges.parse('this-year')).should be
+      w.should be_kind_of(Range)
       w.begin.year.should eq(2013)
       w.begin.month.should eq(1)
       w.begin.day.should eq(1)
@@ -59,7 +73,8 @@ describe AsciiTracker::Ranges do
     end
 
     it 'parses last_week' do
-      (w = Ranges.parse('last_week')).should be_kind_of(Range)
+      (w, _ = Ranges.parse('last_week')).should be
+      w.should be_kind_of(Range)
       w.begin.year.should eq(2013)
       w.begin.month.should eq(9)
       w.begin.day.should eq(2)

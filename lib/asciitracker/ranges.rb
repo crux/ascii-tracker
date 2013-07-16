@@ -1,7 +1,21 @@
 module AsciiTracker::Ranges
 
-  def parse txt
-    self.send(txt.sub('-', '_')) rescue nil
+  # parses one or two parameters from the args vector:
+  #
+  # 1. symbolic name, like 'this-week', 'last-month', etc.
+  # 2. Two date string of the form 2012-12-01 like:
+  #     2012-01-01 2013-01-01   -> returns range for this year.
+  #   
+  # NOTE! the args vector is changed! depending on the one two arg version
+  #
+  def parse(*args)
+    first = args.shift
+    range = if first.match /20[0-9]{2}-[01]\d-[0-3]\d/
+              Range.new(Date.parse(first), Date.parse(args.shift))
+            else
+              self.send(first.sub('-', '_')) rescue nil
+            end
+    [range, args]
   end
 
   def this_year
