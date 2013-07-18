@@ -8,14 +8,22 @@ module AsciiTracker::Ranges
   #   
   # NOTE! the args vector is changed! depending on the one two arg version
   #
-  def parse(*args)
+  def parse!(*args)
     first = args.shift
     range = if first.match /20[0-9]{2}-[01]\d-[0-3]\d/
               Range.new(Date.parse(first), Date.parse(args.shift))
             else
-              self.send(first.sub('-', '_')) rescue nil
+              begin
+                self.send(first.sub('-', '_'))
+              rescue => e
+                raise "unknown first date range param format: '#{first}'"
+              end
             end
     [range, args]
+  end
+
+  def parse(*args)
+    parse!(*args) rescue nil
   end
 
   def this_year

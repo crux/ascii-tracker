@@ -116,7 +116,7 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
     end
 
     def select_in_range args
-      range, args_rest = AsciiTracker::Ranges.parse(*args)
+      range, args_rest = AsciiTracker::Ranges.parse!(*args)
       args.replace(args_rest) # args manipulation must be also be returned 
       puts "selected date range: #{range.begin} #{range.end}"
 

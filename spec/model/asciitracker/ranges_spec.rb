@@ -6,6 +6,13 @@ describe AsciiTracker::Ranges do
 
   it { should be_kind_of(Module) }
 
+  context 'error handling' do
+    it 'bails out on first param when not recogized' do
+      expect { Ranges.parse!('XXX') }.to raise_error /range param format: 'XXX'/
+      expect { Ranges.parse('XXX') }.to_not raise_error
+    end
+  end
+
   it 'parses to date param range args' do
     (w, _ = Ranges.parse('2012-01-01', '2013-01-01')).should be
     w.should be_kind_of(Range)
