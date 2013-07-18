@@ -55,6 +55,10 @@ module AsciiTracker::Ranges
     monday -= (monday.cwday - 1)
   end
 
+  def yesterday
+    Range.new(Date.today - 1, Date.today)
+  end
+
   def this_week
     monday = last_monday
     sunday = monday + 6

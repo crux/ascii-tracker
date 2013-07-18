@@ -25,6 +25,13 @@ describe AsciiTracker::Ranges do
     w.end.day.should eq(1)
   end
 
+  it 'parses yesterday' do
+    (w, _ = Ranges.parse!('yesterday')).should be
+    w.should be_kind_of(Range)
+    w.begin.should eq(Date.today - 1)
+    w.end.should eq(Date.today)
+  end
+
   context 'today' do
     let(:today) { Date.new(2013, 9, 13) }
     before { Date.stub(:today) { today } }
