@@ -25,6 +25,13 @@ describe AsciiTracker::Ranges do
     w.end.day.should eq(1)
   end
 
+  it 'parses today' do
+    (w, _ = Ranges.parse!('today')).should be
+    w.should be_kind_of(Range)
+    w.begin.should eq(Date.today)
+    w.end.should eq(Date.today + 1)
+  end
+
   it 'parses yesterday' do
     (w, _ = Ranges.parse!('yesterday')).should be
     w.should be_kind_of(Range)

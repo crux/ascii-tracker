@@ -59,6 +59,10 @@ module AsciiTracker::Ranges
     Range.new(Date.today - 1, Date.today)
   end
 
+  def today
+    Range.new(Date.today, Date.today + 1)
+  end
+
   def this_week
     monday = last_monday
     sunday = monday + 6
