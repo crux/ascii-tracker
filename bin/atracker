@@ -10,11 +10,17 @@ require 'asciitracker'
 
 # example cmdline:
 #
+# old style:
+#
 #   $ ./slotter.rb --report=2013-02-01--2013-03-01.txt \
 #       scan ~/.timecard \
 #       range 2013-02-01 2013-03-01 \
 #       group report
 #
+# new style:
+#
+#   $ atracker scan ~/.timecard report last-month txt
+# 
 Applix.main(ARGV, AsciiTracker::App::Defaults) do
 
 =begin
