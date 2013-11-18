@@ -12,12 +12,19 @@ module AsciiTracker
     end
 
     def scan args, _ = {}
-      filename = args.shift
+      args.shift.split(/,/).each do |filename|
+        scan_file(filename)
+        #puts "scanning file: #{filename}"
+        #AsciiTracker::Parser.parse(@c, IO.read(filename))
+        #puts "records:\n#{records.join("\n")}"
+        #puts "--> 2: #{@c.model}"
+        #puts "--> 3: #{@c.model.records}"
+      end
+    end
+ 
+    def scan_file filename
       puts "scanning file: #{filename}"
       AsciiTracker::Parser.parse(@c, IO.read(filename))
-      #puts "records:\n#{records.join("\n")}"
-      #puts "--> 2: #{@c.model}"
-      #puts "--> 3: #{@c.model.records}"
     end
 
     def report(args, options = {})

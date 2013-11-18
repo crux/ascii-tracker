@@ -12,9 +12,13 @@ Install it as:
 
 TODO: Write usage instructions here
  
-render report of lasts month activties to stdout:
+Example: render report of lasts month activties to stdout:
 
   $ atracker scan ~/.timecard report last-month txt
+
+Available Processing units: 
+
+- scan <filename> or <filename>,<filename>,...
 
 ## Contributing
 
