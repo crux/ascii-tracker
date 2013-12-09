@@ -16,9 +16,9 @@ Example: render report of lasts month activties to stdout:
 
   $ atracker scan ~/.timecard report last-month txt
 
-Available Processing units: 
-
-- scan <filename> or <filename>,<filename>,...
+for `scan` you can use a single filename, a comma seperated list or even a
+wildcard regex pattern. When using a regexp pattern you must escape it from
+the shell, e.G.: ... scan "\*.txt"
 
 ## Contributing
 

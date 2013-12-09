@@ -11,8 +11,10 @@ module AsciiTracker::Ranges
   def parse!(*args)
     first = args.shift
     range = if first.match /20[0-9]{2}-[01]\d-[0-3]\d/
+              # 1. take args as date range
               Range.new(Date.parse(first), Date.parse(args.shift))
             else
+              # 2. try parsing as symbolic range
               begin
                 self.send(first.sub('-', '_'))
               rescue => e
