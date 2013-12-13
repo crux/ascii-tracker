@@ -17,5 +17,7 @@ describe AsciiTracker::App do
       app.should_receive(:scan_file).with('c')
       app.scan(['a,b,c'])
     end
+
+    pending 'include selector on groups'
   end
 end

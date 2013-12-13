@@ -34,6 +34,12 @@ module AsciiTracker
       group(@c.model.projects)
     end
 
+    # removes all projects groups which are not included in whitelist
+    def include(args, options = {}) 
+      whitelist = args.shift.split(/,/)
+      @groups.select! {|project_id, _| whitelist.include?(project_id) }
+    end
+
     def txt(options = {})
       outfile = if options[:report] and options[:report] != '-'
                   File.open(options[:report], (options[:append] ? "a+" : "w"))
