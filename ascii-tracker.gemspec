@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["dirk lu\xCC\x88sebrink"]
   spec.email         = ["dirk.luesebrink@gmail.com"]
   spec.description   = %q{
-    keeping track of time in a textfile. now web app, no mouse clicking. No GUI
-    is as easy as "12:13-17:34", and no time tracker i know of allows you to
-    add interrupts like: '0:13 pause: phone call with mum'
+    keeping track of time in a textfile, no web browser, no mouse clicking. No
+    GUI is as easy as "12:13-17:34".  And no time tracker i know of allows you
+    to add interrupts like: '0:13 pause: phone call with mum'
   }
   spec.summary       = %q{time tracking the ascii way}
   spec.homepage      = ""
@@ -28,9 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency 'guard-rspec'
 
-  if RUBY_PLATFORM.match /java/i
-    spec.add_development_dependency 'ruby-debug'
-  else
-    spec.add_development_dependency 'debugger'
+  if !(RUBY_PLATFORM.match /java/i) && (RUBY_VERSION.match /^2/)
+    spec.add_development_dependency 'byebug'
   end
 end

@@ -18,6 +18,6 @@ describe AsciiTracker::App do
       app.scan(['a,b,c'])
     end
 
-    pending 'include selector on groups'
+    skip 'include selector on groups'
   end
 end
