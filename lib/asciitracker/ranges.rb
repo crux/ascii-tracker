@@ -16,7 +16,7 @@ module AsciiTracker::Ranges
             else
               # 2. try parsing as symbolic range
               begin
-                self.send(first.sub('-', '_'))
+                self.send(first.gsub('-', '_'))
               rescue => e
                 raise "unknown first date range param format: '#{first}'"
               end
@@ -27,6 +27,12 @@ module AsciiTracker::Ranges
   def parse(*args)
     parse!(*args) rescue nil
   end
+
+  def year_to_date
+    t = Date.today
+    Range.new(Date.new(t.year, 1, 1), Date.new(t.year, t.month, t.day) + 1)
+  end
+  alias_method :ytd, :year_to_date
 
   def this_year
     Range.new(

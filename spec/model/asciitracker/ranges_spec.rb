@@ -70,19 +70,28 @@ describe AsciiTracker::Ranges do
       w.end.day.should eq(1)
     end
 
-    it 'parses this_year' do
-      (w, _ = Ranges.parse('this-year')).should be
-      w.should be_kind_of(Range)
-      w.begin.year.should eq(2013)
-      w.begin.month.should eq(1)
-      w.begin.day.should eq(1)
+    it "parses 'ytd' as alias to 'year-to-date'" do
+      (w, _ = Ranges.parse!('ytd')).should be
+      expect(w).to eq(Ranges.year_to_date)
+    end
+    it "parses 'year-to-date' into Ranges.year_to_date" do
+      (w, _ = Ranges.parse!('year-to-date')).should be
+      expect(w = Ranges.year_to_date).to be_kind_of(Range)
 
-      w.end.year.should eq(2014)
-      w.end.month.should eq(1)
-      w.end.day.should eq(1)
+      expect(w.begin.year).to eq(2013)
+      expect(w.begin.month).to eq(1)
+      expect(w.begin.day).to eq(1)
+
+      expect(w.end.year).to eq(2013)
+      expect(w.end.month).to eq(9)
+      expect(w.end.day).to eq(14)
     end
 
-    it 'knows this year, year to date' do
+    it "parses 'this-year' into Ranges.this_year" do
+      (w, _ = Ranges.parse('this-year')).should be
+      expect(w).to eq(Ranges.this_year)
+    end
+    it 'knows this year' do
       (w = Ranges.this_year).should be_kind_of(Range)
       w.begin.year.should eq(2013)
       w.begin.month.should eq(1)
