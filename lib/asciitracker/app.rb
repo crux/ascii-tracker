@@ -2,7 +2,8 @@ module AsciiTracker
   class App
 
     Defaults = {
-      outfile: nil, # defaults to $stdout
+      outfile: nil,   # defaults to $stdout
+      delimiter: ',', # defaults to german delimiter 
     }
 
     def initialize #(context)
@@ -40,12 +41,33 @@ module AsciiTracker
       @groups.select! {|project_id, _| whitelist.include?(project_id) }
     end
 
+    # output a report in csv format
+    def csv(options = {})
+      outfile = open_outstream(options[:report], options)
+
+      # column heads first
+      outfile.puts('date;hh:mm;h;begin;end;project;desc')
+
+      @groups.each do |project_id, group| 
+        group.records.each do |rec| 
+          # strip project descriptive name from description text
+          proj, desc = rec.desc.split(/: /, 2)
+          # a, b are begin and end in case record is actually a slot 
+          a, b = rec.respond_to?(:t_start) ?  [rec.t_start, rec.t_end] : []
+
+          # with --delimiter=<char> you can change this
+          h = "%.2f"%rec.span
+          (options[:delimiter] and h.sub!('.', options[:delimiter]))
+
+          outfile.puts(
+            [rec.date, HHMM.new(rec.span), h, a, b, proj, desc].join(';')
+          )
+        end
+      end
+    end
+
     def txt(options = {})
-      outfile = if options[:report] and options[:report] != '-'
-                  File.open(options[:report], (options[:append] ? "a+" : "w"))
-                else
-                  $stdout # nil or '-' means stdout
-                end
+      outfile = open_outstream(options[:report], options)
 
       workcount = weekdays_in_range(*@selection_range) \
         - (sickcount = @sickdays.size) \
@@ -105,6 +127,15 @@ sickdays: #{@sickdays.map {|rec| rec.date.strftime("%e.%b")}.join(", ") }
     end
 
     private
+
+    # path == nil or '-' means stdout
+    def open_outstream(path = '-', options = {})
+      if(path and path != '-')
+        File.open(path, (options[:append] ? "a+" : "w"))
+      else
+        $stdout
+      end
+    end
 
     def weekdays_in_range(first_day, last_day)
       range = (first_day...last_day)

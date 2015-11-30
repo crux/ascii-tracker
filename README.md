@@ -28,6 +28,10 @@ the shell, e.G.: ... scan "\*.txt"
 
 remove all groups which are not in the include list, e.g: .. include foo,bar ...
 
+## Options
+
+    --outfile=<path>    for reports written to file     <default to $stdout>
+    --delimiter=.       floating point printing         <defaults to ','>
 
 ## Contributing
 
